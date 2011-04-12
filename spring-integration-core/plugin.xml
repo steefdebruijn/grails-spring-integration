@@ -1,0 +1,14 @@
+<plugin name='spring-integration-core' version='2.0.4.1' grailsVersion='1.3.7 &gt; *'>
+  <author>Steef de Bruijn</author>
+  <authorEmail>steef@debruijn.ws</authorEmail>
+  <title>Spring Integration support for Grails - Core</title>
+  <description>\
+This plugin provides basic dependency support for the Spring Integration Core jar.
+</description>
+  <documentation>http://steefdebruijn.github.com/grails-spring-integration</documentation>
+  <resources>
+    <resource>BuildConfig</resource>
+  </resources>
+  <dependencies />
+  <behavior />
+</plugin>
