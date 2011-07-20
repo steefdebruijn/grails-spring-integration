@@ -1,0 +1,47 @@
+<plugin name='spring-integration-ws' version='2.0.4.1' grailsVersion='1.3.7 &gt; *'>
+  <author>Steef de Bruijn</author>
+  <authorEmail>steef@debruijn.ws</authorEmail>
+  <title>Spring Integration support for Grails - WebServices</title>
+  <description>\
+This plugin provides support for Spring Integration WebServices.
+
+It creates a spring-ws servlet on /services, and creates an UriEndpointMapping
+that publishes the message to the spring-integration-ws-requests channel.
+
+All service classes are scanned for "requestNamespace" static property. For all these classes an endpoint
+will be configured and a generated WSDL will be exported as /services/&lt;serviceClass.logicalPropertyName&gt;.wsdl.
+The provided XSDs will be scanned for request, response and fault messages for this. This scan can be configured
+for non-standard Request, Response and Fault suffixes with static properties "requestSuffix", "responseSuffix"
+and "faultSuffix". The service namespace in the exported WSDL will be defaulted to the given "requestNamespace",
+but can be customized with the static property "serviceNamespace".
+
+Required static attributes are:
+- requestNamespace : indicates namespace of request, triggers plugin
+- requestXsdFilename : Filename of XSD defining request, located on classpath
+
+Required method is
+- String invoke (message), where the message is a to a GPathResult converted payload
+
+Optional static attributes are:
+- wsdlFilename : if given, must be located on classpath and will be exported as
+                 /services/&lt;serviceClass.logicalPropertyName&gt;-formal.wsdl.
+- serviceNamespace : used for dynamic WSDL generation, defaults to requestNamespace
+- responseXsdFilename : Filename of XSD defining response, located on classpath
+- requestSuffix, responseSuffix, faultSuffix : change defaults when scanning XSDs for WSDL generation
+- validateRequest, validateResponse : when set to true, the request and/or response messages will be validated
+                                      against the given "requestXsdFilename" and "responseXsdFilename"
+
+TIP: Put wsdl files in &lt;your-grails-app&gt;/src/java/wsdl and xsd files in &lt;your-grails-app&gt;/src/java/xsd.
+     Refer to these files as 'xsd/blah.xsd' in your service classes.
+     This way these files can be served from your own application plugins instead of being hard-wired
+     in your WEB-INF directory of your Grails application.
+</description>
+  <documentation>http://steefdebruijn.github.com/grails-spring-integration</documentation>
+  <resources>
+    <resource>BuildConfig</resource>
+  </resources>
+  <dependencies>
+    <plugin name='springIntegrationCore' version='2.0.4.1' />
+  </dependencies>
+  <behavior />
+</plugin>
