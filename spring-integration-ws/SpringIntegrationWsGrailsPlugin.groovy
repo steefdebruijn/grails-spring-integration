@@ -70,7 +70,7 @@ Required method is
 
 Optional static attributes are:
 - wsdlFilename : if given, must be located on classpath and will be exported as
-                 /services/<serviceClass.logicalPropertyName>-formal.wsdl.
+                 /services/<serviceClass.scriptName>-formal.wsdl.
 - serviceNamespace : used for dynamic WSDL generation, defaults to requestNamespace
 - responseXsdFilename : Filename of XSD defining response, located on classpath
 - requestSuffix, responseSuffix, faultSuffix : change defaults when scanning XSDs for WSDL generation
@@ -78,9 +78,11 @@ Optional static attributes are:
                                       against the given "requestXsdFilename" and "responseXsdFilename"
 
 TIP: Put wsdl files in <your-grails-app>/src/java/wsdl and xsd files in <your-grails-app>/src/java/xsd.
-     Refer to these files as 'xsd/blah.xsd' in your service classes.
+     Refer to these files as 'wsdl/blah.wsdl' and/or 'xsd/blah.xsd' in your service classes.
      This way these files can be served from your own application plugins instead of being hard-wired
      in your WEB-INF directory of your Grails application.
+
+Please post your issues on GitHub
 '''
 
   def documentation = "http://steefdebruijn.github.com/grails-spring-integration"

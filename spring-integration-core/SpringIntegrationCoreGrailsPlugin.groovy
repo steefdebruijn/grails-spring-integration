@@ -17,6 +17,8 @@ class SpringIntegrationCoreGrailsPlugin {
   def title = "Spring Integration support for Grails - Core"
   def description = '''\\
 This plugin provides basic dependency support for the Spring Integration Core jar.
+
+Please post your issues on GitHub
 '''
 
   def documentation = "http://steefdebruijn.github.com/grails-spring-integration"
