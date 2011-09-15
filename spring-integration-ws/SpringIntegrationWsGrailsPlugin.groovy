@@ -50,7 +50,7 @@ class SpringIntegrationWsGrailsPlugin {
   def author = "Steef de Bruijn"
   def authorEmail = "steef@debruijn.ws"
   def title = "Spring Integration support for Grails - WebServices"
-  def description = '''\\
+  def description = '''\
 This plugin provides support for Spring Integration WebServices.
 
 It creates a spring-ws servlet on /services, and creates an UriEndpointMapping

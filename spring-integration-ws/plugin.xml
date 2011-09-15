@@ -2,8 +2,7 @@
   <author>Steef de Bruijn</author>
   <authorEmail>steef@debruijn.ws</authorEmail>
   <title>Spring Integration support for Grails - WebServices</title>
-  <description>\
-This plugin provides support for Spring Integration WebServices.
+  <description>This plugin provides support for Spring Integration WebServices.
 
 It creates a spring-ws servlet on /services, and creates an UriEndpointMapping
 that publishes the message to the spring-integration-ws-requests channel.

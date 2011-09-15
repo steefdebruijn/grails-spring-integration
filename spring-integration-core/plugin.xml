@@ -2,8 +2,9 @@
   <author>Steef de Bruijn</author>
   <authorEmail>steef@debruijn.ws</authorEmail>
   <title>Spring Integration support for Grails - Core</title>
-  <description>\
-This plugin provides basic dependency support for the Spring Integration Core jar.
+  <description>This plugin provides basic dependency support for the Spring Integration Core jar.
+
+Please post your issues on GitHub
 </description>
   <documentation>http://steefdebruijn.github.com/grails-spring-integration</documentation>
   <resources>
