@@ -39,12 +39,14 @@ class SpringIntegrationWsGrailsPlugin {
   static final Log log = LogFactory.getLog("$PACKAGE_NAME.${this.simpleName}")
 
   def version = "2.0.5.2.SNAPSHOT"
-  def grailsVersion = "1.3.7 > *"
+  def grailsVersion = "1.3.6 > *"
   def dependsOn = [springIntegrationCore: '2.0.5 > 2.0.6']
   def pluginExcludes = [
+          'grails-app/i18n/**',
           'grails-app/services/ws/debruijn/grails/plugin/springframework/integration/ws/test/ServiceClassService.groovy',
           'grails-app/views/error.gsp',
-          'src/java/ws/debruijn/grails/plugin/springframework/integration/ws/test/service.xsd'
+          'src/java/ws/debruijn/grails/plugin/springframework/integration/ws/test/service.xsd',
+          'web-app/**'
   ]
 
   def author = "Steef de Bruijn"
