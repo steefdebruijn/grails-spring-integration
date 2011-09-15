@@ -42,7 +42,9 @@ class SpringIntegrationWsGrailsPlugin {
   def grailsVersion = "1.3.7 > *"
   def dependsOn = [springIntegrationCore: '2.0.5 > 2.0.6']
   def pluginExcludes = [
-          "grails-app/views/error.gsp"
+          'grails-app/services/ws/debruijn/grails/plugin/springframework/integration/ws/test/ServiceClassService.groovy',
+          'grails-app/views/error.gsp',
+          'src/java/ws/debruijn/grails/plugin/springframework/integration/ws/test/service.xsd'
   ]
 
   def author = "Steef de Bruijn"

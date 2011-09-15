@@ -41,6 +41,7 @@ Please post your issues on GitHub
   <documentation>http://steefdebruijn.github.com/grails-spring-integration</documentation>
   <resources>
     <resource>BuildConfig</resource>
+    <resource>ws.debruijn.grails.plugin.springframework.integration.ws.test.ServiceClassService</resource>
   </resources>
   <dependencies>
     <plugin name='springIntegrationCore' version='2.0.5 &gt; 2.0.6' />
