@@ -38,7 +38,7 @@ class SpringIntegrationWsGrailsPlugin {
   static final String DEFAULT_FAULT_SUFFIX = 'Fault'
   static final Log log = LogFactory.getLog("$PACKAGE_NAME.${this.simpleName}")
 
-  def version = "2.0.5.1.RELEASE"
+  def version = "2.0.5.2.SNAPSHOT"
   def grailsVersion = "1.3.7 > *"
   def dependsOn = [springIntegrationCore: '2.0.5 > 2.0.6']
   def pluginExcludes = [
