@@ -5,7 +5,7 @@ class SpringIntegrationCoreGrailsPlugin {
   static final String PACKAGE_NAME = 'ws.debruijn.grails.plugin.springframework.integration.core'
   static final Log log = LogFactory.getLog("$PACKAGE_NAME.${this.simpleName}")
 
-  def version = "2.0.4.1"
+  def version = "2.0.5.1.RELEASE"
   def grailsVersion = "1.3.7 > *"
   def dependsOn = [:]
   def pluginExcludes = [

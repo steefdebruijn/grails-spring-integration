@@ -13,7 +13,7 @@ grails.project.dependency.resolution = {
     mavenCentral()
   }
   dependencies {
-    runtime('org.springframework.integration:spring-integration-core:2.0.4.RELEASE') {
+    runtime('org.springframework.integration:spring-integration-core:2.0.5.RELEASE') {
       excludes([group: 'org.springframework'])
     }
   }
