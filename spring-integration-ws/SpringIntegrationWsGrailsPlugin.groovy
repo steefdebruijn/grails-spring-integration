@@ -90,7 +90,10 @@ Please post your issues on GitHub
   def documentation = "http://steefdebruijn.github.com/grails-spring-integration"
 
   def doWithWebDescriptor = { xml ->
-    configureSpringWsServlet(xml)
+    getAllEndpointClasses.delegate = delegate
+    if (getAllEndpointClasses().size() > 0) {
+      configureSpringWsServlet(xml)
+    }
   }
 
   private void configureSpringWsServlet(xml) {
@@ -122,14 +125,17 @@ Please post your issues on GitHub
   }
 
   def doWithSpring = {
-    createGenericBeans.delegate = delegate
-    createGenericBeans()
+    getAllEndpointClasses.delegate = delegate
+    if (getAllEndpointClasses().size() > 0) {
+      createGenericBeans.delegate = delegate
+      createGenericBeans()
 
-    configureBeansForAllEndpoints.delegate = delegate
-    configureBeansForAllEndpoints()
+      configureBeansForAllEndpoints.delegate = delegate
+      configureBeansForAllEndpoints()
 
-    createNamespaceChannelMap.delegate = delegate
-    createNamespaceChannelMap()
+      createNamespaceChannelMap.delegate = delegate
+      createNamespaceChannelMap()
+    }
   }
 
   private def createGenericBeans = {
@@ -380,7 +386,7 @@ Please post your issues on GitHub
   }
 
   private Boolean getStaticWsdlMustBeExportedForEndpoint(endpointClass) {
-     ! "classpath:null".equals(getWsdlFilenameForEndpoint(endpointClass))
+    !"classpath:null".equals(getWsdlFilenameForEndpoint(endpointClass))
   }
 
   private List getXsdFilenamesForEndpoint(endpointClass) {
