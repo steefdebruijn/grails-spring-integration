@@ -92,10 +92,7 @@ Please post your issues on GitHub
   def documentation = "http://steefdebruijn.github.com/grails-spring-integration"
 
   def doWithWebDescriptor = { xml ->
-    getAllEndpointClasses.delegate = delegate
-    if (getAllEndpointClasses().size() > 0) {
-      configureSpringWsServlet(xml)
-    }
+    configureSpringWsServlet(xml)
   }
 
   private void configureSpringWsServlet(xml) {
