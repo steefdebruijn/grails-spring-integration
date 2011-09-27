@@ -27,6 +27,7 @@ Optional static attributes are:
 - serviceNamespace : used for dynamic WSDL generation, defaults to requestNamespace
 - responseXsdFilename : Filename of XSD defining response, located on classpath
 - requestSuffix, responseSuffix, faultSuffix : change defaults when scanning XSDs for WSDL generation
+- requestType: unmarshall to given class instead of to GPathResult
 - validateRequest, validateResponse : when set to true, the request and/or response messages will be validated
                                       against the given "requestXsdFilename" and "responseXsdFilename"
 
@@ -41,6 +42,7 @@ Please post your issues on GitHub
   <resources>
     <resource>BuildConfig</resource>
     <resource>UrlMappings</resource>
+    <resource>ws.debruijn.grails.plugin.springframework.integration.ws.test.PojoClassService</resource>
     <resource>ws.debruijn.grails.plugin.springframework.integration.ws.test.ServiceClassService</resource>
   </resources>
   <dependencies>

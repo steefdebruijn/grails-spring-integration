@@ -1,3 +1,5 @@
+import grails.util.GrailsNameUtils
+import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsClass
@@ -7,15 +9,17 @@ import org.springframework.integration.router.HeaderValueRouter
 import org.springframework.integration.transformer.MessageTransformingHandler
 import org.springframework.integration.ws.SimpleWebServiceInboundGateway
 import org.springframework.integration.xml.selector.XmlValidatingMessageSelector
+import org.springframework.integration.xml.transformer.ResultToDocumentTransformer
+import org.springframework.integration.xml.transformer.UnmarshallingTransformer
 import org.springframework.integration.xml.transformer.XPathHeaderEnricher
 import org.springframework.integration.xml.transformer.XPathHeaderEnricher.XPathExpressionEvaluatingHeaderValueMessageProcessor
+import org.springframework.oxm.jaxb.Jaxb2Marshaller
 import org.springframework.ws.server.endpoint.mapping.UriEndpointMapping
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition
 import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition
 import org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection
 import ws.debruijn.grails.plugin.springframework.integration.xml.Source2GPathResultTransformer
 import org.springframework.integration.config.*
-import grails.util.GrailsNameUtils
 
 class SpringIntegrationWsGrailsPlugin {
   static final String PACKAGE_NAME = 'ws.debruijn.grails.plugin.springframework.integration.ws'
@@ -27,6 +31,7 @@ class SpringIntegrationWsGrailsPlugin {
   static final String ENDPOINT_REQUEST_NAMESPACE_PROPERTY = 'requestNamespace'
   static final String ENDPOINT_REQUEST_XSD_FILENAME_PROPERTY = 'requestXsdFilename'
   static final String ENDPOINT_REQUEST_SUFFIX_PROPERTY = 'requestSuffix'
+  static final String ENDPOINT_REQUEST_TYPE_PROPERTY = 'requestType'
   static final String ENDPOINT_VALIDATE_REQUEST_PROPERTY = 'validateRequest'
   static final String ENDPOINT_RESPONSE_XSD_FILENAME_PROPERTY = 'responseXsdFilename'
   static final String ENDPOINT_RESPONSE_SUFFIX_PROPERTY = 'responseSuffix'
@@ -44,8 +49,10 @@ class SpringIntegrationWsGrailsPlugin {
   def pluginExcludes = [
           'grails-app/i18n/**',
           'grails-app/services/ws/debruijn/grails/plugin/springframework/integration/ws/test/ServiceClassService.groovy',
+          'grails-app/services/ws/debruijn/grails/plugin/springframework/integration/ws/test/PojoClassService.groovy',
           'grails-app/views/error.gsp',
           'src/java/ws/debruijn/grails/plugin/springframework/integration/ws/test/service.xsd',
+          'src/java/ws/debruijn/grails/plugin/springframework/integration/ws/test/PojoObject.java',
           'web-app/**'
   ]
 
@@ -78,6 +85,7 @@ Optional static attributes are:
 - serviceNamespace : used for dynamic WSDL generation, defaults to requestNamespace
 - responseXsdFilename : Filename of XSD defining response, located on classpath
 - requestSuffix, responseSuffix, faultSuffix : change defaults when scanning XSDs for WSDL generation
+- requestType: unmarshall to given class instead of to GPathResult
 - validateRequest, validateResponse : when set to true, the request and/or response messages will be validated
                                       against the given "requestXsdFilename" and "responseXsdFilename"
 
@@ -303,25 +311,42 @@ Please post your issues on GitHub
   }
 
   private def createEndpointTransformerWithBeanPrefixAndInputChannelName = { endpointClass, beanPrefix, inputChannel ->
-    log.info "Creating endpoint transformer for $beanPrefix..."
+    Class requestType = getRequestTypeForEndpoint(endpointClass)
+    String requestTypeAsString
+    if (requestType)
+      requestTypeAsString = requestType.name
+    else
+      requestTypeAsString = GPathResult.name
+
+    log.info "Creating endpoint transformer for $beanPrefix (converting to $requestTypeAsString)..."
     "${inputChannel}"(DirectChannel)
     "${beanPrefix}Transformer"(ConsumerEndpointFactoryBean) {
       inputChannelName = "${inputChannel}"
       handler = ref("${beanPrefix}TransformerHandler")
     }
-    "${beanPrefix}TransformerHandler"(TransformerFactoryBean) {
-      targetObject = ref('siWsPayloadToGPathResultTransformer')
-      targetMethodName = 'transform'
-      outputChannel = ref("${beanPrefix}PayloadAsGPathResultChannel")
+    if (requestType) {
+      "${beanPrefix}TransformerHandler"(MessageTransformingHandler, ref("${beanPrefix}TransformerTransformer")) {
+        outputChannel = ref("${beanPrefix}ConvertedPayloadChannel")
+      }
+      "${beanPrefix}TransformerTransformer"(UnmarshallingTransformer, ref("${beanPrefix}TransformerUnmarshaller")) {}
+      "${beanPrefix}TransformerUnmarshaller"(Jaxb2Marshaller) {
+        classesToBeBound = [requestType]
+      }
+    } else {
+      "${beanPrefix}TransformerHandler"(TransformerFactoryBean) {
+        targetObject = ref('siWsPayloadToGPathResultTransformer')
+        targetMethodName = 'transform'
+        outputChannel = ref("${beanPrefix}ConvertedPayloadChannel")
+      }
     }
   }
 
   private def createEndpointHandlerWithBeanPrefixAndOutputChannelName = { endpointClass, beanPrefix, outputChannelName ->
     String serviceBeanName = endpointClass.propertyName
     log.info "Creating endpoint handler for $beanPrefix..."
-    "${beanPrefix}PayloadAsGPathResultChannel"(DirectChannel)
+    "${beanPrefix}ConvertedPayloadChannel"(DirectChannel)
     "${beanPrefix}Endpoint"(ConsumerEndpointFactoryBean) {
-      inputChannelName = "${beanPrefix}PayloadAsGPathResultChannel"
+      inputChannelName = "${beanPrefix}ConvertedPayloadChannel"
       handler = ref("${beanPrefix}EndpointHandler")
     }
     "${beanPrefix}EndpointHandler"(ServiceActivatorFactoryBean) {
@@ -352,9 +377,9 @@ Please post your issues on GitHub
   private def createEndpointHandlerWithBeanPrefix = { endpointClass, beanPrefix ->
     String serviceBeanName = endpointClass.propertyName
     log.info "Creating endpoint handler for $beanPrefix..."
-    "${beanPrefix}PayloadAsGPathResultChannel"(DirectChannel)
+    "${beanPrefix}ConvertedPayloadChannel"(DirectChannel)
     "${beanPrefix}Endpoint"(ConsumerEndpointFactoryBean) {
-      inputChannelName = "${beanPrefix}PayloadAsGPathResultChannel"
+      inputChannelName = "${beanPrefix}ConvertedPayloadChannel"
       handler = ref("${beanPrefix}EndpointHandler")
     }
     "${beanPrefix}EndpointHandler"(ServiceActivatorFactoryBean) {
@@ -418,6 +443,10 @@ Please post your issues on GitHub
   private String getRequestSuffixForEndpoint(endpointClass) {
     return getValueOfStaticPropertyForGrailsClass(ENDPOINT_REQUEST_SUFFIX_PROPERTY, endpointClass) ?:
       DEFAULT_REQUEST_SUFFIX
+  }
+
+  private Class getRequestTypeForEndpoint(endpointClass) {
+    return (Class) getValueOfStaticPropertyForGrailsClass(ENDPOINT_REQUEST_TYPE_PROPERTY, endpointClass)
   }
 
   private String getResponseSuffixForEndpoint(endpointClass) {

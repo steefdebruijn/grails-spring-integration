@@ -17,6 +17,7 @@ class MessageRoutingTests extends GrailsUnitTestCase {
 
   def siWsRequestsChannel
   def serviceClassService
+  def pojoClassService
 
   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance()
   DocumentBuilder builder = factory.newDocumentBuilder()
@@ -56,6 +57,15 @@ class MessageRoutingTests extends GrailsUnitTestCase {
     assertFalse 'serviceClass already contains my key', serviceClassService.hasReceived('contentWithPrefix')
     siWsRequestsChannel.send(message)
     assertTrue 'serviceClass did not receive my key', serviceClassService.hasReceived('contentWithPrefix')
+  }
+
+  @Test
+  void message_shouldBeDeliveredAsPOJOToServiceClass() {
+    String s = '<prefix:message xmlns:prefix="http://pojo.ws/namespace/uri"><prefix:content>pojoContent</prefix:content></prefix:message>'
+    Message<DOMSource> message = createMessage(s)
+    assertFalse 'serviceClass already contains my key', pojoClassService.hasReceived('pojoContent')
+    siWsRequestsChannel.send(message)
+    assertTrue 'serviceClass did not receive my key', pojoClassService.hasReceived('pojoContent')
   }
 
   private Message<DOMSource> createMessage(String messageContent) {
