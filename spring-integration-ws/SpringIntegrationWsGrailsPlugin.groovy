@@ -9,7 +9,6 @@ import org.springframework.integration.router.HeaderValueRouter
 import org.springframework.integration.transformer.MessageTransformingHandler
 import org.springframework.integration.ws.SimpleWebServiceInboundGateway
 import org.springframework.integration.xml.selector.XmlValidatingMessageSelector
-import org.springframework.integration.xml.transformer.ResultToDocumentTransformer
 import org.springframework.integration.xml.transformer.UnmarshallingTransformer
 import org.springframework.integration.xml.transformer.XPathHeaderEnricher
 import org.springframework.integration.xml.transformer.XPathHeaderEnricher.XPathExpressionEvaluatingHeaderValueMessageProcessor
@@ -20,6 +19,7 @@ import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition
 import org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection
 import ws.debruijn.grails.plugin.springframework.integration.xml.Source2GPathResultTransformer
 import org.springframework.integration.config.*
+import javax.xml.bind.helpers.DefaultValidationEventHandler
 
 class SpringIntegrationWsGrailsPlugin {
   static final String PACKAGE_NAME = 'ws.debruijn.grails.plugin.springframework.integration.ws'
@@ -331,7 +331,9 @@ Please post your issues on GitHub
       "${beanPrefix}TransformerTransformer"(UnmarshallingTransformer, ref("${beanPrefix}TransformerUnmarshaller")) {}
       "${beanPrefix}TransformerUnmarshaller"(Jaxb2Marshaller) {
         classesToBeBound = [requestType]
+        validationEventHandler = ref("${beanPrefix}ValidationEventHandler")
       }
+      "${beanPrefix}ValidationEventHandler"(DefaultValidationEventHandler)
     } else {
       "${beanPrefix}TransformerHandler"(TransformerFactoryBean) {
         targetObject = ref('siWsPayloadToGPathResultTransformer')
